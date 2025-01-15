@@ -687,4 +687,130 @@ module.exports = {
                 }
 
         },
+		whisparr: {
+		params: ['whisparrurl', 'whisparrkey', 'whisparrcats', 'seeds'],
+		required: ['whisparrurl', 'whisparrkey'],
+		defaults: ["", "", '6000,6010,6020,6030,6040,6045,6050,6060,6070,6080,6090', 1],
+		process: [undefined, undefined, (val) => val.split(',').map(el => parseInt(el))],
+		get: async (url, key, cats) => {
+
+
+			const reqUrl = `${url}/api/v3/indexer?apikey=${key}`;
+
+                        const response = await axios.get(reqUrl);
+                        const indexers = [];
+
+                        for (const i in response.data) {
+                                const entry = response.data[i];
+                                const indexer = Object.assign({}, schema, {
+                                        title: entry.name,
+                                        protocol: entry.protocol,
+                                        url: entry.fields[0].value,
+                                        key: entry.fields[2].value,
+                                        seeds: 1,
+                                        id: undefined,
+                                        appId: entry.id
+                                });
+
+                                let match = indexer.url.match(indexerRegex);
+                                if (match) {
+                                        indexer.id = match.groups.id;
+                                }
+
+                                indexers.push(indexer);
+                        }
+
+                        return indexers;
+                },
+		add: async (url, key, cats, seeds, indexer) => {
+			const reqUrl = `${url}/api/v3/indexer?apikey=${key}`
+
+                        const body = {
+                                enableRss: true,
+                                enableAutomaticSearch: true,
+                                enableInteractiveSearch: true,
+                                supportsRss: true,
+                                supportsSearch: true,
+                                protocol: indexer.protocol,
+                                name: indexer.title,
+                                fields: [
+                                        { name: 'baseUrl', value: indexer.url },
+                                        { name: 'apiPath', value: '' },
+					{ name: "multiLanguages", value: [] },
+                                        { name: 'apiKey', value: indexer.key },
+                                        { name: 'categories', value: cats },
+                                        { name: 'additionalParameters' },
+                                        { name: 'minimumSeeders', value: seeds },
+                                        { name: 'seedCriteria.seedRatio' },
+                                        { name: 'seedCriteria.seedTime' },
+                                        { name: 'removeYear', value: false },
+					{ name: 'requiredFlags', value: [] }
+                                ],
+                                implementationName: 'Torznab',
+                                implementation: 'Torznab',
+                                configContract: 'TorznabSettings',
+                                tags: [],
+				priority: 25
+                        }
+
+			try {
+				const resp = await axios.post(reqUrl, body);
+				console.log(`[Radarr] Added ${indexer.id} successfully`);
+			} catch (e) {
+				console.error(`[Radarr] Failed to add ${indexer.id}: ${e.response.data[0] ? e.response.data[0].errorMessage : e}`);
+				console.error(e);
+			}
+		},
+		shouldAdd: (url, key, cats, seeds, el) => el.categories.some(r => cats.includes(r)),
+		update: async (url, key, cats, seeds, current, indexer) => {
+			const reqUrl = `${url}/api/v3/indexer/${current.appId}?apikey=${key}`
+
+			const body = {
+                                enableRss: true,
+                                enableAutomaticSearch: true,
+                                enableInteractiveSearch: true,
+                                supportsRss: true,
+                                supportsSearch: true,
+                                protocol: indexer.protocol,
+                                name: indexer.title,
+				id: curent.appId,
+                                fields: [
+                                        { name: 'baseUrl', value: indexer.url },
+                                        { name: 'apiPath', value: '' },
+                                        { name: "multiLanguages", value: [] },
+                                        { name: 'apiKey', value: indexer.key },
+                                        { name: 'categories', value: cats },
+                                        { name: 'additionalParameters' },
+                                        { name: 'minimumSeeders', value: seeds },
+                                        { name: 'seedCriteria.seedRatio' },
+                                        { name: 'seedCriteria.seedTime' },
+                                        { name: 'removeYear', value: false },
+                                        { name: 'requiredFlags', value: [] }
+                                ],
+                                implementationName: 'Torznab',
+                                implementation: 'Torznab',
+                                configContract: 'TorznabSettings',
+                                tags: [],
+                                priority: 25
+                        }
+
+			try {
+				const resp = await axios.put(reqUrl, body);
+				console.log(`[Radarr] Updated ${indexer.id} successfully`);
+			} catch (e) {
+				console.error(`[Radarr] Failed to update ${indexer.id}: ${e.response.data[0] ? e.response.data[0].errorMessage : e}`);
+			}
+		},
+		shouldUpdate: (url, key, cats, seeds, current, indexer) => {
+
+                        const mask = {categories: undefined, appId: undefined};
+
+                        const cr = Object.assign({}, current, mask);
+                        const ix = Object.assign({}, indexer, {...mask, seeds: seeds});
+
+                        console.log(cr, ix)
+
+                        return !deepCompare(cr, ix);
+		}
+	},
 }
