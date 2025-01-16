@@ -27,6 +27,8 @@ services:
       RADARR_KEY: 
       LIDARR_URL: http://lidarr:8686
       LIDARR_KEY:     
+      WHISPARR_URL: http://whisparr:6969
+      WHISPARR_KEY:     
 # ... Lidarr, Sonarr, etc. config
 ```
 Right now it just runs the script in a loop, but you should be able to adjust `./docker/cron` to change frequency.
