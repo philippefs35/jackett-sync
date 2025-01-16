@@ -686,8 +686,8 @@ module.exports = {
                         return !deepCompare(cr, ix);
                 }
 
-        },
-		whisparr: {
+    },
+	whisparr: {
 		params: ['whisparrurl', 'whisparrkey', 'whisparrcats', 'seeds'],
 		required: ['whisparrurl', 'whisparrkey'],
 		defaults: ["", "", '6000,6010,6020,6030,6040,6045,6050,6060,6070,6080,6090', 1],
@@ -755,9 +755,9 @@ module.exports = {
 
 			try {
 				const resp = await axios.post(reqUrl, body);
-				console.log(`[Radarr] Added ${indexer.id} successfully`);
+				console.log(`[Whisparr] Added ${indexer.id} successfully`);
 			} catch (e) {
-				console.error(`[Radarr] Failed to add ${indexer.id}: ${e.response.data[0] ? e.response.data[0].errorMessage : e}`);
+				console.error(`[Whisparr] Failed to add ${indexer.id}: ${e.response.data[0] ? e.response.data[0].errorMessage : e}`);
 				console.error(e);
 			}
 		},
@@ -796,9 +796,9 @@ module.exports = {
 
 			try {
 				const resp = await axios.put(reqUrl, body);
-				console.log(`[Radarr] Updated ${indexer.id} successfully`);
+				console.log(`[Whisparr] Updated ${indexer.id} successfully`);
 			} catch (e) {
-				console.error(`[Radarr] Failed to update ${indexer.id}: ${e.response.data[0] ? e.response.data[0].errorMessage : e}`);
+				console.error(`[Whisparr] Failed to update ${indexer.id}: ${e.response.data[0] ? e.response.data[0].errorMessage : e}`);
 			}
 		},
 		shouldUpdate: (url, key, cats, seeds, current, indexer) => {
