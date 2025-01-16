@@ -42,6 +42,15 @@ APIKEY="--apikey $APIKEY"
 [[ ! -z "$LIDARR_CATS" ]] && \
   LIDARR_CATS="--lidarrcats $LIDARR_CATS"
 
+[[ ! -z "$WHISPARR_URL" ]] && \
+  WHISPARR_URL="--whisparrurl $WHISPARR_URL"
+
+[[ ! -z "$LIDARR_KEY" ]] && \
+  WHISPARRR_KEY="--whisparrkey $WHISPARR_KEY"
+
+[[ ! -z "$LWHISPARR_CATS" ]] && \
+  WHISPARR_CATS="--whisparrcats $WHISPARR_CATS"
+
 [[ ! -z "$SEEDS" ]] && \
   SEEDS="--seeds $SEEDS"
 
@@ -53,4 +62,5 @@ cd /jackett-sync
 yarn start $SYNC $SEEDS $URL $APIKEY $ALTURL \
 	$SONARR_URL $SONARR_KEY $SONARR_CATS $SONARR_ANIME_CATS \
 	$RADARR_URL $RADARR_KEY $RADARR_CATS \
-	$LIDARR_URL $LIDARR_KEY $LIDARR_CATS $*
+	$LIDARR_URL $LIDARR_KEY $LIDARR_CATS \
+  $WHISPARR_URL $WHISPARR_KEY $WHISPARR_CATS $*
